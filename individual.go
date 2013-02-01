@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "time"
     "math/rand"
     "math"
@@ -31,11 +32,13 @@ func generateRandomIndividual(dna_length int) Individual {
 
 func (ind *Individual) calculateFitness() {
     // TODO Halting problem yo
+    fmt.Println("lol")
     output := Interpret(ind.dna, CELLCOUNT)
+    fmt.Println("MANAGED TO FINISH")
 
     fitness := 0
     for i := 0; i < len(output); i++ {
-        fitness += 256 - math.Abs(output[i] - ind.goal[i])
+        fitness += 256 - int(math.Abs(float64(output[i]) - float64(ind.goal[i])))
     }
 
     ind.fitness = fitness
@@ -48,7 +51,7 @@ func (ind *Individual) mutateDna() {
         if rand.Float64() < MUTATION_RATE {
             buffer.WriteString(string(INSTRUCTIONS[rand.Intn(8)]))
         } else {
-            buffer.WriteString(ind.dna[i])
+            buffer.WriteString(string(ind.dna[i]))
         }
     }
 

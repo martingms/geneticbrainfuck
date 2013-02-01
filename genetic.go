@@ -4,7 +4,7 @@ import (
     "fmt"
     "sync"
     "sort"
-    "rand"
+    "math/rand"
 )
 
 const (
@@ -26,14 +26,14 @@ func CreateExperiment(goal_string string, individual_count, dna_length, fitness_
         exp.individuals[i] = generateRandomIndividual(dna_length)
     }
 
-    return exp
+    return &exp
 }
 
 func (exp *Experiment) Start() {
     fmt.Println("Starting...")
     best_fitness := 0
     for best_fitness < exp.fitness_goal {
-        best_fitness = runIteration()
+        best_fitness = exp.runIteration()
         if exp.generation % 100 == 0 {
             fmt.Println("Generation %s finished, best fitness score: %s.", exp.generation, best_fitness)
         }
@@ -67,6 +67,8 @@ func (exp *Experiment) runIteration() (top_fitness int) {
     // Sort individuals by fitness.
     sort.Sort(Individuals(exp.individuals))
 
+    top_fitness = exp.individuals[0].fitness
+
     new_gen := make([]Individual, len(exp.individuals))
 
     // The top ten percent of the previous generation is let through to the next unharmed.
@@ -78,13 +80,13 @@ func (exp *Experiment) runIteration() (top_fitness int) {
     // Extremely ugly code written at 3 am after a case of beer.
     // BADLY needs rewriting, as there is probably no logic to this, read up!
     // Mating of 80% of population, that is len(exp.individuals)*0.4 matings.
-    for i := 0; i < int(len(exp.individuals)*0.4); i++ {
+    for i := 0; i < int(float64(len(exp.individuals))*0.4); i++ {
         var parent1 Individual
         var par1_index int
         var parent2 Individual
         // TODO Need seed?
         x := rand.Float64()
-        sum := 0
+        sum := 0.0
         for j := range exp.individuals {
             sum += float64(exp.individuals[j].fitness) / float64(fitness_sum)
             if sum >= x {
@@ -94,7 +96,7 @@ func (exp *Experiment) runIteration() (top_fitness int) {
             }
         }
         x = rand.Float64()
-        sum := 0
+        sum = 0
         for j := range exp.individuals {
             sum += float64(exp.individuals[j].fitness) / float64(fitness_sum)
             if sum >= x && j != par1_index {
@@ -104,11 +106,21 @@ func (exp *Experiment) runIteration() (top_fitness int) {
         }
 
         child1, child2 := twoPointCrossover(parent1, parent2)
-        child1.mutate()
-        child2.mutate()
-        new_gen[new_gen_ptr++], new_gen[new_gen_ptr++] = child1, child2
-
-
+        child1.mutateDna()
+        child2.mutateDna()
+        new_gen[new_gen_ptr] = child1
+        new_gen_ptr++
+        new_gen[new_gen_ptr] = child2
+        new_gen_ptr++
+        //new_gen[new_gen_ptr++], new_gen[new_gen_ptr++] = child1, child2
     }
 
+    // Fill the last spots with new blood.
+    for new_gen_ptr < len(new_gen) {
+        new_gen[new_gen_ptr] = generateRandomIndividual(256) //FIXME Don't inline this
+        new_gen_ptr++
+    }
+
+    exp.individuals = new_gen
+    return
 }

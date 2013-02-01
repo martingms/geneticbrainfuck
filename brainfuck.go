@@ -11,7 +11,12 @@ func Interpret(input string, cellcount int) (output string) {
             case '>':
                 cell_ptr++
             case '<':
-                cell_ptr--
+                // Loop around if below zero.
+                if cell_ptr > 0 {
+                    cell_ptr--
+                  } else {
+                    cell_ptr = len(cells) - 1
+                }
             case '+':
                 cells[cell_ptr]++
             case '-':
@@ -30,6 +35,11 @@ func Interpret(input string, cellcount int) (output string) {
                         } else if input[input_ptr] == ']' {
                             loop_depth--
                         }
+
+                        //FIXME oob quick fix, do better.
+                        if input_ptr-1 == len(input) {
+                            return ""
+                        }
                     }
                 }
             case ']':
@@ -40,6 +50,11 @@ func Interpret(input string, cellcount int) (output string) {
                             loop_depth++
                         } else if input[input_ptr] == '[' {
                             loop_depth--
+                        }
+
+                        //FIXME oob quick fix, do better.
+                        if input_ptr-1 < 0 {
+                            return ""
                         }
                     }
                 }
