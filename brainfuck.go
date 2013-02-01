@@ -20,7 +20,7 @@ func Interpret(input string, cellcount int) (output string) {
                 output += string(cells[cell_ptr])
             case ',':
                 // TODO
-                // Input not needed yet, so not supported either.
+                // Input not needed yet, so not supported yet either.
             case '[':
                 if cells[cell_ptr] == 0 {
                     input_ptr++
