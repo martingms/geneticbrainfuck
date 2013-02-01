@@ -9,7 +9,7 @@ import (
 
 const (
     INSTRUCTIONS = "<>+-.,[]"
-    MUTATION_RATE = 0.01
+    MUTATION_RATE = 0.04
 )
 
 type Individual struct {
