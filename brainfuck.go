@@ -19,7 +19,7 @@ func Interpret(input string, cellcount int) (output string) {
 
         // We're probably in an infinite loop, time to go home.
         // TODO Find sweetspot in time.
-        if elapsed_time.Nanoseconds() > 5000000 {
+        if elapsed_time.Nanoseconds() > 1000000 {
             //fmt.Println("Timed out!", output)
             return
         }
