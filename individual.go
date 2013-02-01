@@ -1,7 +1,6 @@
 package main
 
 import (
-    "fmt"
     "time"
     "math/rand"
     "math"
@@ -31,13 +30,10 @@ func generateRandomIndividual(dna_length int) Individual {
 }
 
 func (ind *Individual) calculateFitness() {
-    // TODO Halting problem yo
-    fmt.Println("lol")
     output := Interpret(ind.dna, CELLCOUNT)
-    fmt.Println("MANAGED TO FINISH")
 
     fitness := 0
-    for i := 0; i < len(output); i++ {
+    for i := 0; i < len(output) && i < len(ind.goal); i++ {
         fitness += 256 - int(math.Abs(float64(output[i]) - float64(ind.goal[i])))
     }
 
@@ -76,4 +72,5 @@ func twoPointCrossover(parent1, parent2 Individual) (Individual, Individual) {
 type Individuals []Individual
 func (inds Individuals) Len() int { return len(inds) }
 func (inds Individuals) Swap(i, j int) { inds[i], inds[j] = inds[j], inds[i] }
-func (inds Individuals) Less(i, j int) bool { return inds[i].fitness < inds[j].fitness }
+// FIXME Not strictly correct, wrap in Reverse interface.
+func (inds Individuals) Less(i, j int) bool { return inds[i].fitness > inds[j].fitness }

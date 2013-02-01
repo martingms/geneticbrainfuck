@@ -24,23 +24,37 @@ func CreateExperiment(goal_string string, individual_count, dna_length, fitness_
 
     for i := range exp.individuals {
         exp.individuals[i] = generateRandomIndividual(dna_length)
+        exp.individuals[i].goal = goal_string
     }
 
     return &exp
 }
 
 func (exp *Experiment) Start() {
-    fmt.Println("Starting...")
+    fmt.Println("Starting experiment...")
     best_fitness := 0
     for best_fitness < exp.fitness_goal {
         best_fitness = exp.runIteration()
-        if exp.generation % 100 == 0 {
-            fmt.Println("Generation %s finished, best fitness score: %s.", exp.generation, best_fitness)
-        }
-        if exp.generation % 1000 == 0 {
-            fmt.Println("Output of best performing individual:\n") //TODO
+        //if exp.generation % 100 == 0 {
+        fmt.Println("Generation finished: ", exp.generation)
+        fmt.Println(" -> Best fitness score: ", best_fitness)
+        //}
+        if exp.generation % 10 == 0 {
+            fmt.Println(" -> Output of best performing individual:")
+            fmt.Println(Interpret(exp.individuals[0].dna, CELLCOUNT), "\n\n")
+
+            fmt.Println(" -> DNA of best performing individual:")
+            fmt.Println(exp.individuals[0].dna, "\n\n")
         }
     }
+
+    // TODO Write beter output, like time elapsed etc.
+    fmt.Println("Experiment finished!")
+    fmt.Println("Reached target fitness score.")
+    fmt.Println(" -> Final BrainFuck DNA:\n")
+    fmt.Println(exp.individuals[0].dna, "\n\n")
+    fmt.Println(" -> Final output:\n")
+    fmt.Println(Interpret(exp.individuals[0].dna, CELLCOUNT), "\n\n")
 }
 
 func (exp *Experiment) runIteration() (top_fitness int) {
@@ -48,12 +62,12 @@ func (exp *Experiment) runIteration() (top_fitness int) {
 
     // Test fitness of all individuals.
     var wg sync.WaitGroup
-    for _, ind := range exp.individuals {
+    for i := range exp.individuals {
         wg.Add(1)
-        go func(ind Individual) {
-            ind.calculateFitness()
+        go func(i int) {
+            exp.individuals[i].calculateFitness()
             wg.Done()
-        }(ind)
+        }(i)
     }
     wg.Wait()
 
@@ -63,6 +77,7 @@ func (exp *Experiment) runIteration() (top_fitness int) {
     for _, ind := range exp.individuals {
         fitness_sum += ind.fitness
     }
+
 
     // Sort individuals by fitness.
     sort.Sort(Individuals(exp.individuals))
