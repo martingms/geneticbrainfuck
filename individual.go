@@ -52,6 +52,19 @@ func (ind *Individual) mutateDna() {
     }
 
     ind.dna = buffer.String()
+
+    // Experimental shift mutation.
+    // FIXME Also horribly slow, if this works then optimize.
+    // The difference from the preceding mutation is that it adds instead of mutates.
+    for i := range ind.dna {
+        if rand.Float64() < MUTATION_RATE {
+            buffer.WriteString(string(INSTRUCTIONS[rand.Intn(8)]))
+        }
+        buffer.WriteString(string(ind.dna[i]))
+    }
+
+    ind.dna = buffer.String()[:128] // FIXME don't inline.
+
 }
 
 func twoPointCrossover(parent1, parent2 Individual) (Individual, Individual) {
@@ -62,6 +75,7 @@ func twoPointCrossover(parent1, parent2 Individual) (Individual, Individual) {
     pos1 := rand.Intn(len(parent1.dna))
     pos2 := pos1 +  rand.Intn(len(parent1.dna) - pos1)
 
+    // FIXME pos2 might be oob?
     child1.dna = parent1.dna[0:pos1] + parent2.dna[pos1:pos2] + parent1.dna[pos2:]
     child2.dna = parent2.dna[0:pos1] + parent1.dna[pos1:pos2] + parent2.dna[pos2:]
 

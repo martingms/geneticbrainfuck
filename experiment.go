@@ -132,7 +132,7 @@ func (exp *Experiment) runIteration() (top_fitness int) {
 
     // Fill the last spots with new blood.
     for new_gen_ptr < len(new_gen) {
-        new_gen[new_gen_ptr] = generateRandomIndividual(256) //FIXME Don't inline this
+        new_gen[new_gen_ptr] = generateRandomIndividual(128) //FIXME Don't inline this
         new_gen_ptr++
     }
 

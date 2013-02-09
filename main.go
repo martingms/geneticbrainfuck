@@ -1,6 +1,6 @@
 package main
 
 func main() {
-    exp := CreateExperiment("Hello World!", 200, 256, 3072)
-    exp.Start()
+	exp := CreateExperiment("hei", 200, 128, 768)
+	exp.Start()
 }
